@@ -1,36 +1,78 @@
-// src/lib.rs
 #![recursion_limit = "1024"]
-mod map;
 mod board;
 mod cards;
+mod game;
+mod map;
 
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
-struct Game {
-  map: map::Map,
-  cards: Vec<map::Tile>
+struct Lobby {
+  props: Props,
+  link: ComponentLink<Self>,
+}
+
+#[derive(Clone)]
+enum State {
+  PreGame{
+    players: Vec<String>,
+  },
+  InGame{
+    players: Vec<String>,
+  },
+}
+
+#[derive(Properties, Clone)]
+struct Props {
+  state: State,
+}
+
+impl Default for Props {
+  fn default() -> Self {
+    Props {
+      state: State::PreGame{ players: Vec::new() },
+    }
+  }
 }
 
 pub enum Msg {
-  Render(f64),
+  StartGame,
+  AddPlayer(String),
+  UpdatePlayer(usize, String),
 }
 
-impl Component for Game {
+impl Component for Lobby {
   type Message = Msg;
-  type Properties = ();
+  type Properties = Props;
 
-  fn create(_: Self::Properties, _: ComponentLink<Self>) -> Self {
-    let map = map::Map::new(9, 9);
-    let cards = map.random(8);
+  fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
     Self {
-      map,
-      cards,
+      props,
+      link,
     }
   }
 
-  fn update(&mut self, _: Self::Message) -> ShouldRender {
-    false
+  fn update(&mut self, msg: Self::Message) -> ShouldRender {
+    match &mut self.props.state {
+      State::PreGame { players } => {
+        match msg {
+          Msg::StartGame => {
+            self.props.state = State::InGame{ players: players.to_vec() };
+          },
+          Msg::AddPlayer(name) => {
+            players.push(name);
+          },
+          Msg::UpdatePlayer(i, name) => {
+            if name == "" {
+              players.remove(i);
+            }
+            players[i] = name;
+          },
+        };
+        true
+      },
+      _ => false,
+    }
   }
 
   fn change(&mut self, _: Self::Properties) -> ShouldRender {
@@ -38,44 +80,60 @@ impl Component for Game {
   }
 
   fn view(&self) -> Html {
-    html! {
-      <div>
-        <h1 class="title has-text-centered"> {"Octo Traders"} </h1>
-        <section class="columns">
-          <div class="column is-one-quarter has-text-centered">
-            <h2 class="subtitle"> {"Resources"} </h2>
-            <div> <span> {"Food"} </span> </div>
-            <div> <span> {"Sand"} </span> </div>
-            <div> <span> {"Sheep"} </span> </div>
-            <div> <span> {"Stone"} </span> </div>
-            <div> <span> {"Wood"} </span> </div>
+    match &self.props.state {
+      State::PreGame { players } => {
+        html! {
+          <div>
+            <section class="hero is-info">
+              <div class="hero-body">
+                <div class="container">
+                  <h1 class="title">
+                    {"Octo Traders"}
+                  </h1>
+                </div>
+              </div>
+            </section>
+            <div class="container">
+              <div class="field">
+                <label class="label">{"Players"}</label>
+                {
+                  players.iter().enumerate().map(|(i, player)| {
+                    html! {
+                      <div class="control">
+                        <input class="input"
+                          type="text"
+                          value={player}
+                          oninput=self.link.callback(move |e: InputData| Msg::UpdatePlayer(i, e.value))
+                        />
+                      </div>
+                    }
+                  }).collect::<Vec<Html>>()
+                }
+                <div class="control">
+                  <input class="input"
+                    type="text"
+                    placeholder={format!("Player {}", players.len() + 1)}
+                    oninput=self.link.callback(|e: InputData| Msg::AddPlayer(e.value))
+                    />
+                </div>
+              </div>
+              <button onclick=self.link.callback(move |_| Msg::StartGame) class="button is-large">
+                {"Start Game"}
+              </button>
+            </div>
           </div>
-          <div class="column">
-            <board::Board map={self.map.clone()}/>
-          </div>
-          <div class="column is-one-quarter has-text-centered">
-            <h2 class="subtitle"> {"Players"} </h2>
-            <div> <span> {"Hayden"} </span> </div>
-            <div> <span> {"Bob"} </span> </div>
-            <div> <span> {"Alice"} </span> </div>
-          </div>
-        </section>
-        <section class="columns">
-          <div class="column is-one-quarter has-text-centered">
-          </div>
-          <div class="column">
-            <cards::Cards cards={self.cards.clone()}/>
-          </div>
-          <div class="column is-one-quarter has-text-centered">
-            <button class="button is-large"> {"End Turn"} </button>
-          </div>
-        </section>
-      </div>
+        }
+      },
+      State::InGame { players } => {
+        html! {
+          <game::Game players={players} />
+        }
+      },
     }
   }
 }
 
 #[wasm_bindgen(start)]
 pub fn run_app() {
-  yew::start_app::<Game>();
+  yew::start_app::<Lobby>();
 }

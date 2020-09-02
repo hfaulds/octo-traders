@@ -19,6 +19,7 @@ features = [
   'CanvasRenderingContext2d',
   'HtmlCanvasElement',
   'HtmlImageElement',
+  'InputEvent',
   'WebGlShader',
   'WebGlUniformLocation',
 ]

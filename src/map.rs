@@ -1,5 +1,3 @@
-// src/map.rs
-use std::collections::HashMap;
 use rand::seq::SliceRandom;
 use web_sys::HtmlImageElement;
 
@@ -35,8 +33,8 @@ impl<'a> Map {
       image: self.tiles.get(x as usize).unwrap().get(y as usize).unwrap().clone(),
       image_width: 256.,
       image_height: 256.,
-      width: 90.,
-      height: 54.,
+      width: 92.,
+      height: 48.,
     }
   }
 
@@ -50,8 +48,8 @@ impl<'a> Map {
           image,
           image_width: 256.,
           image_height: 256.,
-          width: 90.,
-          height: 54.,
+          width: 92.,
+          height: 48.,
         }
       )
     }
@@ -60,7 +58,6 @@ impl<'a> Map {
 }
 
 pub struct Tiles {
-  map: HashMap<String, HtmlImageElement>,
   vec: Vec<HtmlImageElement>,
 }
 
@@ -131,25 +128,19 @@ impl Tiles {
       //"river_intersectionG_S.png",
       //"river_start_S.png",
       ];
-    let mut map: HashMap<String, HtmlImageElement> = HashMap::new();
     let mut vec: Vec<HtmlImageElement> = Vec::new();
 
     for image in images {
       let element = HtmlImageElement::new().unwrap();
       element.set_src(&format!("./tiles/{}", image));
-      map.insert(String::from(image), element.clone());
       vec.push(element);
     }
 
-    Tiles { map, vec }
+    Tiles { vec }
   }
 }
 
 impl<'a> Tiles {
-  pub fn get(&'a self, name: & str) -> &'a HtmlImageElement {
-    self.map.get(name).unwrap()
-  }
-
   pub fn random(&'a self) -> &'a HtmlImageElement {
     self.vec.choose(&mut rand::thread_rng()).unwrap()
   }

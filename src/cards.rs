@@ -49,7 +49,7 @@ impl Component for Cards {
           // canvas center
           let cx = (canvas.width() as f64 - card.image_width) / 2.;
           // card position
-          let tx = (x as f64 - (self.props.cards.len() as f64 / 2.) + .5) * (card.width + 10.);
+          let tx = (x as f64 - (self.props.cards.len() as f64 / 2.) + 0.5) * (card.width + 10.);
           ctx
             .draw_image_with_html_image_element_and_dw_and_dh(
               &card.image,
