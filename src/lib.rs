@@ -61,7 +61,10 @@ impl Component for Root {
       },
       State::InGame { players } => {
         html! {
-          <game::Game players={players} end_game=self.link.callback(move |players| Msg::EndGame)/>
+          <game::Game
+            players={players}
+            max_rounds={2}
+            end_game=self.link.callback(move |players| Msg::EndGame)/>
         }
       },
     }

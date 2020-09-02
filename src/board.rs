@@ -9,7 +9,7 @@ use crate::map;
 pub struct Board {
   canvas: Option<HtmlCanvasElement>,
   ctx: Option<CanvasRenderingContext2d>,
-  map: map::Map,
+  props: Props,
   link: ComponentLink<Self>,
   node_ref: NodeRef,
   render_loop: Option<Box<dyn Task>>,
@@ -19,7 +19,7 @@ pub enum Msg {
   Render(f64),
 }
 
-#[derive(Properties, Clone)]
+#[derive(Properties, Clone, PartialEq)]
 pub struct Props {
     pub map: map::Map,
 }
@@ -32,7 +32,7 @@ impl Component for Board {
     Self {
       canvas: None,
       ctx: None,
-      map: props.map,
+      props,
       link,
       node_ref: NodeRef::default(),
       render_loop: None,
@@ -44,8 +44,9 @@ impl Component for Board {
       Msg::Render(_) => {
         let ctx = self.ctx.as_ref().expect("Context not initialized!");
         let canvas = self.canvas.as_ref().expect("Cannot get context");
+        ctx.clear_rect(0., 0., canvas.width() as f64, canvas.height() as f64);
 
-        let map = &self.map;
+        let map = &self.props.map;
         for y in 0..map.columns() {
           for x in 0..map.rows() {
             let tile = map.get(x, y);
@@ -78,7 +79,10 @@ impl Component for Board {
     false
   }
 
-  fn change(&mut self, _: Self::Properties) -> ShouldRender {
+  fn change(&mut self, props: Self::Properties) -> ShouldRender {
+    if props != self.props {
+      self.props = props;
+    }
     false
   }
 
@@ -104,7 +108,7 @@ impl Component for Board {
 
   fn view(&self) -> Html {
     html! {
-      <canvas ref={self.node_ref.clone()} height={format!("{}px", self.map.rows() as f64 * 70.)} width="1000px"/>
+      <canvas ref={self.node_ref.clone()} height={format!("{}px", self.props.map.rows() as f64 * 70.)} width="1000px"/>
     }
   }
 }

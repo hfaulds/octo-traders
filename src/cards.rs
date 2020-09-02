@@ -19,7 +19,7 @@ pub enum Msg {
   Render(f64),
 }
 
-#[derive(Properties, Clone)]
+#[derive(Properties, Clone, PartialEq)]
 pub struct Props {
     pub cards: Vec<map::Tile>
 }
@@ -44,6 +44,7 @@ impl Component for Cards {
       Msg::Render(_) => {
         let ctx = self.ctx.as_ref().expect("Context not initialized!");
         let canvas = self.canvas.as_ref().expect("Cannot get context");
+        ctx.clear_rect(0., 0., canvas.width() as f64, canvas.height() as f64);
 
         for (x, card) in self.props.cards.iter().enumerate() {
           // canvas center
@@ -69,7 +70,10 @@ impl Component for Cards {
     false
   }
 
-  fn change(&mut self, _: Self::Properties) -> ShouldRender {
+  fn change(&mut self, props: Self::Properties) -> ShouldRender {
+    if self.props != props {
+      self.props = props
+    }
     false
   }
 

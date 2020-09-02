@@ -1,7 +1,7 @@
 use rand::seq::SliceRandom;
 use web_sys::HtmlImageElement;
 
-#[derive(Clone)]
+#[derive(Clone,PartialEq)]
 pub struct Map {
   tiles: Vec<Vec<HtmlImageElement>>,
 }
@@ -40,9 +40,10 @@ impl<'a> Map {
 
   pub fn random(&'a self, num: u8) -> Vec<Tile> {
     let mut tiles = Vec::new();
+    let rng = &mut rand::thread_rng();
     for _ in 0..num {
-      let image = self.tiles.choose(&mut rand::thread_rng()).unwrap()
-        .choose(&mut rand::thread_rng()).unwrap().clone();
+      let image = self.tiles.choose(rng).unwrap()
+        .choose(rng).unwrap().clone();
       tiles.push(
         Tile {
           image,
@@ -146,7 +147,7 @@ impl<'a> Tiles {
   }
 }
 
-#[derive(Clone)]
+#[derive(Clone,PartialEq)]
 pub struct Tile {
   pub image: HtmlImageElement,
   pub image_width: f64,
