@@ -42,17 +42,28 @@ impl Component for Hello {
     match msg {
       Msg::Render(_) => {
         let ctx = self.ctx.as_ref().expect("Context not initialized!");
+        let canvas = self.canvas.as_ref().expect("Cannot get context");
 
         let map = &self.map;
         for y in 0..map.columns() {
           for x in 0..map.rows() {
+            let tile = map.get(x, y);
+            // canvas center
+            let cx = (canvas.width() / 2) as f64;
+            let cy = (canvas.height() / 2) as f64;
+            // tile position
+            let tx = (x as f64 - (map.rows() as f64 / 2.)) * tile.width;
+            let ty = (y as f64 - (map.columns() as f64 / 2.)) * tile.height;
+            // tile offset
+            let ox = (y % 2) as f64 * (tile.width / 2.);
+            let oy = tile.height * 2.;
             ctx
               .draw_image_with_html_image_element_and_dw_and_dh(
-                map.get(x, y),
-                x as f64 * 90. + (y % 2) as f64 * 45.,
-                y as f64 * 45.,
-                250.,
-                250.,
+                tile.image,
+                tx - (tile.width * 1.25) + ox + cx,
+                ty - tile.image_width + oy + cy,
+                tile.image_width,
+                tile.image_height,
               )
               .expect("should draw");
           }
@@ -92,11 +103,30 @@ impl Component for Hello {
 
   fn view(&self) -> Html {
     html! {
-      <section class="section">
-        <div class="container">
-          <canvas ref={self.node_ref.clone()} height="1000px" width="1000px"/>
-        </div>
-      </section>
+      <div>
+        <h1 class="title has-text-centered"> {"Tradathon"} </h1>
+        <section class="columns">
+          <div class="column is-one-quarter has-text-centered">
+            <h2 class="subtitle"> {"Resources"} </h2>
+          </div>
+          <div class="column">
+            <canvas ref={self.node_ref.clone()} height="750px" width="1000px"/>
+          </div>
+          <div class="column is-one-quarter has-text-centered">
+            <h2 class="subtitle"> {"Players"} </h2>
+          </div>
+        </section>
+        <section class="columns">
+          <div class="column is-one-quarter has-text-centered">
+          </div>
+          <div class="column">
+            {"ASDF"}
+          </div>
+          <div class="column is-one-quarter has-text-centered">
+            <button class="button is-large"> {"End Turn"} </button>
+          </div>
+        </section>
+      </div>
     }
   }
 }

@@ -11,9 +11,9 @@ impl<'a> Map {
   pub fn random(x: u8, y: u8) -> Map {
     let tiles = Tiles::load();
     let mut rows = Vec::new();
-    for _ in 1..x {
+    for _ in 0..x {
       let mut row = Vec::new();
-      for _ in 1..y {
+      for _ in 0..y {
         row.push(tiles.random().clone())
       }
       rows.push(row);
@@ -29,8 +29,14 @@ impl<'a> Map {
     self.tiles.get(0).unwrap().len() as u8
   }
 
-  pub fn get(&'a self, x: u8, y: u8) -> &'a HtmlImageElement {
-    self.tiles.get(x as usize).unwrap().get(y as usize).unwrap()
+  pub fn get(&'a self, x: u8, y: u8) -> Tile<'a> {
+    Tile {
+      image: self.tiles.get(x as usize).unwrap().get(y as usize).unwrap(),
+      image_width: 256.,
+      image_height: 256.,
+      width: 90.,
+      height: 54.,
+    }
   }
 }
 
@@ -128,4 +134,12 @@ impl<'a> Tiles {
   pub fn random(&'a self) -> &'a HtmlImageElement {
     self.vec.choose(&mut rand::thread_rng()).unwrap()
   }
+}
+
+pub struct Tile<'a> {
+  pub image: &'a HtmlImageElement,
+  pub image_width: f64,
+  pub image_height: f64,
+  pub width: f64,
+  pub height: f64,
 }
