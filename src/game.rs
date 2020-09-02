@@ -1,7 +1,7 @@
 use yew::prelude::*;
 
-use crate::board;
 use crate::cards;
+use crate::board;
 use crate::map;
 
 pub struct Game {
@@ -154,7 +154,7 @@ impl Component for Game {
           <div class="column is-one-quarter has-text-centered">
             <h2 class="subtitle"> {"Round"} </h2>
             <div>
-              <span> { self.state.current_round } </span>
+              <span> { self.state.current_round + 1 } {"/"} { self.props.max_rounds } </span>
             </div>
             <h2 class="subtitle"> {"Players"} </h2>
             {
