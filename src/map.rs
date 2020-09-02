@@ -3,12 +3,13 @@ use std::collections::HashMap;
 use rand::seq::SliceRandom;
 use web_sys::HtmlImageElement;
 
+#[derive(Clone)]
 pub struct Map {
   tiles: Vec<Vec<HtmlImageElement>>,
 }
 
 impl<'a> Map {
-  pub fn random(x: u8, y: u8) -> Map {
+  pub fn new(x: u8, y: u8) -> Map {
     let tiles = Tiles::load();
     let mut rows = Vec::new();
     for _ in 0..x {
@@ -29,14 +30,32 @@ impl<'a> Map {
     self.tiles.get(0).unwrap().len() as u8
   }
 
-  pub fn get(&'a self, x: u8, y: u8) -> Tile<'a> {
+  pub fn get(&self, x: u8, y: u8) -> Tile {
     Tile {
-      image: self.tiles.get(x as usize).unwrap().get(y as usize).unwrap(),
+      image: self.tiles.get(x as usize).unwrap().get(y as usize).unwrap().clone(),
       image_width: 256.,
       image_height: 256.,
       width: 90.,
       height: 54.,
     }
+  }
+
+  pub fn random(&'a self, num: u8) -> Vec<Tile> {
+    let mut tiles = Vec::new();
+    for _ in 0..num {
+      let image = self.tiles.choose(&mut rand::thread_rng()).unwrap()
+        .choose(&mut rand::thread_rng()).unwrap().clone();
+      tiles.push(
+        Tile {
+          image,
+          image_width: 256.,
+          image_height: 256.,
+          width: 90.,
+          height: 54.,
+        }
+      )
+    }
+    tiles
   }
 }
 
@@ -136,8 +155,9 @@ impl<'a> Tiles {
   }
 }
 
-pub struct Tile<'a> {
-  pub image: &'a HtmlImageElement,
+#[derive(Clone)]
+pub struct Tile {
+  pub image: HtmlImageElement,
   pub image_width: f64,
   pub image_height: f64,
   pub width: f64,
