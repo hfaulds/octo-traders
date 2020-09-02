@@ -13,6 +13,7 @@ pub struct Game {
 #[derive(Properties, Clone)]
 pub struct Props {
   pub players: Vec<String>,
+  pub end_game: Callback<()>,
 }
 
 impl Component for Game {
@@ -79,7 +80,9 @@ impl Component for Game {
             <cards::Cards cards={self.cards.clone()}/>
           </div>
           <div class="column is-one-quarter has-text-centered">
-            <button class="button is-large"> {"End Turn"} </button>
+            <button class="button is-large" onclick=self.props.end_game.reform(|_| ())>
+            {"End Turn"}
+          </button>
           </div>
         </section>
       </div>
