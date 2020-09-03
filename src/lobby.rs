@@ -77,13 +77,21 @@ impl Component for Lobby {
                 }
               }).collect::<Vec<Html>>()
             }
-            <div class="control">
-              <input class="input"
-                type="text"
-                placeholder={format!("Player {}", players.len() + 1)}
-                oninput=self.link.callback(|e: InputData| Msg::AddPlayer(e.value))
-                />
-            </div>
+            {
+              if players.len() < 6 {
+                html! {
+                  <div class="control">
+                    <input class="input"
+                      type="text"
+                      placeholder={format!("Player {}", players.len() + 1)}
+                      oninput=self.link.callback(|e: InputData| Msg::AddPlayer(e.value))
+                      />
+                  </div>
+                }
+              } else {
+                html! {}
+              }
+            }
           </div>
           <button onclick=self.props.start_game.reform(move |_| players.clone()) class="button is-large">
             {"Start Game"}

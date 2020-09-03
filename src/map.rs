@@ -6,7 +6,7 @@ use crate::perlin::PerlinNoise;
 
 #[derive(Clone)]
 pub struct Map {
-  images: ImageLoader,
+  pub images: ImageLoader,
   tiles: Vec<Vec<HtmlImageElement>>,
 }
 
@@ -60,6 +60,10 @@ impl<'a> Map {
       images,
       tiles: rows,
     }
+  }
+
+  pub fn center(&self) -> (u8,u8) {
+    (self.columns() / 2, self.rows() / 2)
   }
 
   pub fn rows(&self) -> u8 {

@@ -21,22 +21,35 @@ pub enum Msg {
   EndTurn,
 }
 
-struct State {
-  map: map::Map,
+#[derive(Properties, Clone, PartialEq)]
+pub struct State {
+  pub map: map::Map,
   current_round: usize,
-  current_player: usize,
-  players: Vec<PlayerState>,
+  pub current_player: usize,
+  pub players: Vec<PlayerState>,
 }
 
 impl State {
   fn new(players: Vec<String>) -> Self {
     let images = crate::map::ImageLoader::load();
     let map = map::Map::new(images, 11, 15);
+
+    let (cx, cy) = map.center();
+    // clockwise around center
+    let player_offsets:Vec<(i8,i8)> = vec![
+      (0,-1), (1,-1), (1,0), (1,1), (0,1), (-1,0),
+    ];
+    let player_coords = player_offsets.iter().map(|(x, y)| {
+      ((x + cx as i8) as u8, (y + cy as i8) as u8)
+    }).collect::<Vec<(u8,u8)>>();
     State {
       current_player: 0,
       current_round: 0,
-      players: players.iter().map(|name| {
+      players: players.iter().enumerate().map(|(i, name)| {
+        let (x, y) = player_coords.get(i).unwrap().clone();
         PlayerState {
+          x,
+          y,
           name: name.clone(),
           cards: map.hand(8),
           food: 10,
@@ -65,14 +78,13 @@ impl State {
   fn end_round(&mut self) {
     self.current_player = 0;
     self.current_round += 1;
-
-    for player in self.players.iter_mut() {
-      player.cards = self.map.hand(8).clone();
-    }
   }
 }
 
-struct PlayerState {
+#[derive(Properties, Clone, PartialEq)]
+pub struct PlayerState {
+  pub x: u8,
+  pub y: u8,
   name: String,
   cards: Vec<map::Tile>,
   food: u8,
@@ -150,7 +162,7 @@ impl Component for Game {
             </table>
           </div>
           <div class="column">
-            <board::Board map={self.state.map.clone()}/>
+            <board::Board state={self.state.clone()}/>
           </div>
           <div class="column is-one-quarter has-text-centered">
             <h2 class="subtitle"> {"Round"} </h2>

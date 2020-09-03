@@ -4,8 +4,6 @@ use web_sys::HtmlCanvasElement;
 use yew::prelude::*;
 use yew::services::{RenderService, Task};
 
-use crate::map;
-
 pub struct Board {
   canvas: Option<HtmlCanvasElement>,
   ctx: Option<CanvasRenderingContext2d>,
@@ -21,7 +19,7 @@ pub enum Msg {
 
 #[derive(Properties, Clone, PartialEq)]
 pub struct Props {
-    pub map: map::Map,
+    pub state: crate::game::State,
 }
 
 impl Component for Board {
@@ -46,7 +44,7 @@ impl Component for Board {
         let canvas = self.canvas.as_ref().expect("Cannot get context");
         ctx.clear_rect(0., 0., canvas.width() as f64, canvas.height() as f64);
 
-        let map = &self.props.map;
+        let map = &self.props.state.map;
         for y in 0..map.rows() {
           for x in 0..map.columns() {
             let tile = map.get(x, y);
@@ -68,6 +66,22 @@ impl Component for Board {
                 tile.image_height,
               )
               .expect("should draw");
+
+            if self.props.state.players.iter().any(|p| p.x == x && p.y == y) {
+              if !self.props.state.players.iter().enumerate().any(|(i, p)| p.x == x && p.y == y && i == self.props.state.current_player) {
+                ctx.set_global_alpha(0.5);
+              }
+              ctx
+                .draw_image_with_html_image_element_and_dw_and_dh(
+                  map.images.get(crate::tiles::UNIT_BOAT),
+                  tx - (tile.width * 1.25) + ox + cx,
+                  ty - tile.height + oy + cy,
+                  tile.image_width,
+                  tile.image_height,
+                  )
+                .expect("should draw");
+              ctx.set_global_alpha(1.);
+            }
           }
         }
 
@@ -108,7 +122,9 @@ impl Component for Board {
 
   fn view(&self) -> Html {
     html! {
-      <canvas ref={self.node_ref.clone()} height={format!("{}px", self.props.map.rows() as f64 * 40.)} width="1000px"/>
+      <canvas ref={self.node_ref.clone()}
+        height={format!("{}px", self.props.state.map.rows() as f64 * 40.)}
+        width="1000px"/>
     }
   }
 }

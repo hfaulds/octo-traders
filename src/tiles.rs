@@ -47,7 +47,7 @@ pub const MAP_TILES: [TileData; 24] = [
   WATER_ROCKS,
 ];
 
-pub const ALL_TILES: [TileData; 25] = [
+pub const ALL_TILES: [TileData; 26] = [
   BUILDING_MINE,
   WATER,
   BUILDING_WATER,
@@ -73,6 +73,7 @@ pub const ALL_TILES: [TileData; 25] = [
   SAND_ROCKS,
   BUILDING_CASTLE,
   WATER_ROCKS,
+  UNIT_BOAT,
 ];
 
 pub const BUILDING_MINE: TileData = TileData {
@@ -173,5 +174,9 @@ pub const BUILDING_CASTLE: TileData = TileData {
 };
 pub const WATER_ROCKS: TileData = TileData {
   image: "water_rocks_S.png",
+  resource: ResourceType::None,
+};
+pub const UNIT_BOAT: TileData = TileData {
+  image: "unit_boat_S.png",
   resource: ResourceType::None,
 };
