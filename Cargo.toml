@@ -19,9 +19,12 @@ yew = "0.17"
 version = "0.3"
 features = [
   'CanvasRenderingContext2d',
+  'DomRect',
+  'Element',
   'HtmlCanvasElement',
   'HtmlImageElement',
   'InputEvent',
+  'MouseEvent',
   'WebGlShader',
   'WebGlUniformLocation',
 ]
