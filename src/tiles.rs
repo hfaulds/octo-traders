@@ -26,7 +26,7 @@ pub const CARD_TILES: [TileData; 5] = [
   BUILDING_CASTLE,
 ];
 
-pub const ALL_TILES: [TileData; 26] = [
+pub const ALL_TILES: [TileData; 25] = [
   BUILDING_MINE,
   WATER,
   BUILDING_WATER,
@@ -34,7 +34,6 @@ pub const ALL_TILES: [TileData; 26] = [
   GRASS_FOREST,
   DIRT_LUMBER,
   STONE,
-  STONE_ROCKS,
   DIRT,
   BUILDING_MARKET,
   BUILDING_HOUSE,
@@ -81,10 +80,6 @@ pub const DIRT_LUMBER: TileData = TileData {
 };
 pub const STONE: TileData = TileData {
   image: "stone_S.png",
-  resource: ResourceType::None,
-};
-pub const STONE_ROCKS: TileData = TileData {
-  image: "stone_rocks_S.png",
   resource: ResourceType::None,
 };
 pub const DIRT: TileData = TileData {
