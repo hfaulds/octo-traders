@@ -15,12 +15,14 @@ impl<'a> Map {
     // decide which tiles will be water
     let mut populated_tile_coords = HashMap::new();
     let perlin = PerlinNoise::new();
+    let cx = width/2;
+    let cy = height/2;
     for x in 0..width {
       for y in 0..height {
         let p = perlin.get2d([x as f64 * 1.1, y as f64 * 1.1]);
-        if x != width/2 &&
-           y != height/2 &&
-           p > 0.5
+        let near_center = x >= cx - 1 && x <= cx + 1 &&
+                          y >= cy -1 && y <= cy + 1;
+        if !near_center && p > 0.5
         {
           populated_tile_coords.insert((x,y), ());
         }
