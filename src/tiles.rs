@@ -1,8 +1,10 @@
+#[derive(Clone,Eq,PartialEq,Hash)]
 pub struct TileData {
   pub image: &'static str,
   pub resource: ResourceType,
 }
 
+#[derive(Clone,Eq,PartialEq,Hash)]
 pub enum ResourceType {
   None,
   Sand,
@@ -18,12 +20,31 @@ pub const RESOURCE_TILES: [TileData; 4] = [
   BUILDING_SHEEP,
 ];
 
-pub const CARD_TILES: [TileData; 5] = [
+pub const MAP_TILES: [TileData; 24] = [
   BUILDING_MINE,
+  WATER,
+  BUILDING_WATER,
+  GRASS_HILL,
   GRASS_FOREST,
-  SAND_ROCKS,
+  DIRT_LUMBER,
+  STONE,
+  DIRT,
+  BUILDING_MARKET,
+  BUILDING_HOUSE,
+  BUILDING_TOWER,
+  BUILDING_SMELTER,
+  STONE_HILL,
+  BUILDING_CABIN,
+  BUILDING_WALL,
+  BUILDING_DOCK,
+  STONE_MOUNTAIN,
+  BUILDING_VILLAGE,
+  BUILDING_FARM,
+  BUILDING_MILL,
+  GRASS,
   BUILDING_SHEEP,
-  BUILDING_CASTLE,
+  SAND_ROCKS,
+  WATER_ROCKS,
 ];
 
 pub const ALL_TILES: [TileData; 25] = [

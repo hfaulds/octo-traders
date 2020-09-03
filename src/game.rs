@@ -30,14 +30,15 @@ struct State {
 
 impl State {
   fn new(players: Vec<String>) -> Self {
-    let map = map::Map::new(11, 15);
+    let images = crate::map::ImageLoader::load();
+    let map = map::Map::new(images, 11, 15);
     State {
       current_player: 0,
       current_round: 0,
       players: players.iter().map(|name| {
         PlayerState {
           name: name.clone(),
-          cards: map.random(8),
+          cards: map.hand(8),
           food: 10,
           sand: 0,
           sheep: 0,
@@ -66,7 +67,7 @@ impl State {
     self.current_round += 1;
 
     for player in self.players.iter_mut() {
-      player.cards = self.map.random(8).clone();
+      player.cards = self.map.hand(8).clone();
     }
   }
 }
