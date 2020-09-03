@@ -30,7 +30,7 @@ struct State {
 
 impl State {
   fn new(players: Vec<String>) -> Self {
-    let map = map::Map::new(9, 9);
+    let map = map::Map::new(11, 15);
     State {
       current_player: 0,
       current_round: 0,

@@ -1,5 +1,9 @@
 use rand::seq::SliceRandom;
+use std::collections::HashMap;
 use web_sys::HtmlImageElement;
+use log::info;
+
+use crate::perlin::PerlinNoise;
 
 #[derive(Clone,PartialEq)]
 pub struct Map {
@@ -7,13 +11,21 @@ pub struct Map {
 }
 
 impl<'a> Map {
-  pub fn new(x: u8, y: u8) -> Map {
+  pub fn new(width: u8, height: u8) -> Map {
     let tiles = Tiles::load();
     let mut rows = Vec::new();
-    for _ in 0..x {
+    let perlin = PerlinNoise::new();
+
+    for x in 0..width {
       let mut row = Vec::new();
-      for _ in 0..y {
-        row.push(tiles.random().clone())
+      for y in 0..height {
+        let p = perlin.get2d([x as f64 * 1.1, y as f64 * 1.1]);
+        info!("({} {}) {}", x, y, p);
+        if p > 0.5 {
+          row.push(tiles.random().clone())
+        } else {
+          row.push(tiles.get("water_S.png").clone())
+        }
       }
       rows.push(row);
     }
@@ -21,20 +33,20 @@ impl<'a> Map {
   }
 
   pub fn rows(&self) -> u8 {
-    self.tiles.len() as u8
+    self.tiles.get(0).unwrap().len() as u8
   }
 
   pub fn columns(&self) -> u8 {
-    self.tiles.get(0).unwrap().len() as u8
+    self.tiles.len() as u8
   }
 
   pub fn get(&self, x: u8, y: u8) -> Tile {
     Tile {
       image: self.tiles.get(x as usize).unwrap().get(y as usize).unwrap().clone(),
-      image_width: 256.,
-      image_height: 256.,
-      width: 92.,
-      height: 48.,
+      image_width: 192.,
+      image_height: 192.,
+      width: 69.,
+      height: 36.,
     }
   }
 
@@ -59,89 +71,33 @@ impl<'a> Map {
 }
 
 pub struct Tiles {
+  map: HashMap<String, HtmlImageElement>,
   vec: Vec<HtmlImageElement>,
 }
 
 impl Tiles {
   pub fn load() -> Tiles {
-    let images = vec![
-      "building_mine_S.png",
-      "water_S.png",
-      "building_water_S.png",
-      "sand_S.png",
-      //"unit_houseLarge_S.png",
-      //"path_end_S.png",
-      "grass_hill_S.png",
-      "grass_forest_S.png",
-      "dirt_lumber_S.png",
-      "stone_S.png",
-      "stone_rocks_S.png",
-      //"river_cornerSharp_S.png",
-      //"path_straight_S.png",
-      //"river_straight_S.png",
-      //"path_cornerSharp_S.png",
-      //"river_intersectionH_S.png",
-      //"path_intersectionH_S.png",
-      "dirt_S.png",
-      //"unit_tower_S.png",
-      "building_market_S.png",
-      "building_house_S.png",
-      "building_tower_S.png",
-      "building_smelter_S.png",
-      "stone_hill_S.png",
-      //"unit_house_S.png",
-      //"unit_mill_S.png",
-      //"path_corner_S.png",
-      "building_cabin_S.png",
-      "building_wall_S.png",
-      //"path_start_S.png",
-      "building_dock_S.png",
-      //"river_crossing_S.png",
-      "stone_mountain_S.png",
-      "building_village_S.png",
-      //"path_crossing_S.png",
-      "building_farm_S.png",
-      //"path_intersectionB_S.png",
-      //"river_intersectionB_S.png",
-      //"river_intersectionF_S.png",
-      //"path_intersectionF_S.png",
-      //"unit_wallTower_S.png",
-      "building_mill_S.png",
-      //"river_intersectionD_S.png",
-      //"path_intersectionD_S.png",
-      "grass_S.png",
-      //"river_intersectionC_S.png",
-      //"path_intersectionC_S.png",
-      //"river_intersectionA_S.png",
-      //"path_intersectionA_S.png",
-      "building_sheep_S.png",
-      "sand_rocks_S.png",
-      "building_castle_S.png",
-      //"unit_boat_S.png",
-      //"path_intersectionE_S.png",
-      "water_island_S.png",
-      //"river_intersectionE_S.png",
-      //"river_end_S.png",
-      //"unit_tree_S.png",
-      "water_rocks_S.png",
-      //"river_corner_S.png",
-      //"path_intersectionG_S.png",
-      //"river_intersectionG_S.png",
-      //"river_start_S.png",
-      ];
     let mut vec: Vec<HtmlImageElement> = Vec::new();
+    let mut map: HashMap<String, HtmlImageElement> = HashMap::new();
 
-    for image in images {
+    for tile in crate::tiles::ALL_TILES.iter() {
       let element = HtmlImageElement::new().unwrap();
-      element.set_src(&format!("./tiles/{}", image));
-      vec.push(element);
+      element.set_src(&format!("./tiles/{}", tile.image));
+      map.insert(String::from(tile.image), element.clone());
+      if tile.image != "water_S.png" {
+        vec.push(element);
+      }
     }
 
-    Tiles { vec }
+    Tiles { map, vec }
   }
 }
 
 impl<'a> Tiles {
+  pub fn get(&'a self, name: & str) -> &'a HtmlImageElement {
+    self.map.get(name).unwrap()
+  }
+
   pub fn random(&'a self) -> &'a HtmlImageElement {
     self.vec.choose(&mut rand::thread_rng()).unwrap()
   }

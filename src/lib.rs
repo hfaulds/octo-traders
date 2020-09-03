@@ -4,7 +4,10 @@ mod cards;
 mod game;
 mod lobby;
 mod map;
+mod perlin;
+mod tiles;
 
+use log::Level;
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 
@@ -73,5 +76,6 @@ impl Component for Root {
 
 #[wasm_bindgen(start)]
 pub fn run_app() {
+  console_log::init_with_level(Level::Debug).expect("error initializing log");
   yew::start_app::<Root>();
 }

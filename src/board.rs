@@ -47,23 +47,23 @@ impl Component for Board {
         ctx.clear_rect(0., 0., canvas.width() as f64, canvas.height() as f64);
 
         let map = &self.props.map;
-        for y in 0..map.columns() {
-          for x in 0..map.rows() {
+        for y in 0..map.rows() {
+          for x in 0..map.columns() {
             let tile = map.get(x, y);
             // canvas center
             let cx = (canvas.width() / 2) as f64;
             let cy = (canvas.height() / 2) as f64;
             // tile position
-            let tx = (x as f64 - (map.rows() as f64 / 2.)) * tile.width;
-            let ty = (y as f64 - (map.columns() as f64 / 2.)) * tile.height;
+            let tx = (x as f64 - (map.columns() as f64 / 2.)) * tile.width;
+            let ty = (y as f64 - (map.rows() as f64 / 2.)) * tile.height;
             // tile offset
             let ox = (y % 2) as f64 * (tile.width / 2.);
-            let oy = tile.height * 2.;
+            let oy = tile.height * -2.;
             ctx
               .draw_image_with_html_image_element_and_dw_and_dh(
                 &tile.image,
                 tx - (tile.width * 1.25) + ox + cx,
-                ty - tile.image_width + oy + cy,
+                ty - tile.height + oy + cy,
                 tile.image_width,
                 tile.image_height,
               )
@@ -108,7 +108,7 @@ impl Component for Board {
 
   fn view(&self) -> Html {
     html! {
-      <canvas ref={self.node_ref.clone()} height={format!("{}px", self.props.map.rows() as f64 * 70.)} width="1000px"/>
+      <canvas ref={self.node_ref.clone()} height={format!("{}px", self.props.map.rows() as f64 * 40.)} width="1000px"/>
     }
   }
 }
